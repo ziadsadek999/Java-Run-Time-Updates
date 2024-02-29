@@ -1,5 +1,7 @@
 package commands;
 
+import classLoader.MyClassLoader;
+
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,17 +20,25 @@ public class CommandsMap {
     }
 
 
-//    public static void replace(String className, String commandName, String byteString) {
-//        byte[] byteArray = Base64.getDecoder().decode(byteString);
-//        MyClassLoader loader = new MyClassLoader();
-//        Class newCommand = loader.loadClass(byteArray, className);
-//        cmdMap.put(commandName, newCommand);
-//        System.out.println("replaced");
-//    }
 
-    public static void remove(String commandName) {
+    public static void updateCommand(String className, String commandName, String byteString) {
+        // decoding the string back to byte array
+        byte[] byteArray = Base64.getDecoder().decode(byteString);
+        MyClassLoader loader = new MyClassLoader();
+        // This method loads a class on the fly given its byte code.
+        // Usually it is called when an object is created as it reads
+        // the byte code from the memory to load the class,
+        // create an instance of it then run it.
+        // But here we give it the byte code directly instead of reading it from memory.
+        Class<?> newCommand = loader.loadClass(byteArray, className);
+        cmdMap.put(commandName, newCommand);
+    }
+
+    public static void deleteCommand(String commandName) {
         cmdMap.remove(commandName);
-        System.out.println("removed");
+    }
+    public static void addCommand(String className, String commandName, String byteString) {
+        updateCommand(className,commandName,byteString);
     }
 
     public static Class<?> getClass(String key) {
